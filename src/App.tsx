@@ -1,11 +1,13 @@
 
-function App() {
+import AppProviders from './shared/providers/AppProviders';
+import AppRoutes from './shared/routes/AppRoutes';
 
+function App() {
   return (
-    <>
-    <h1>Hello World!</h1>
-    </>
-  )
+    <AppProviders>
+      <AppRoutes />
+    </AppProviders>
+  );
 }
 
-export default App
+export default App;
