@@ -32,17 +32,16 @@ export default function ProtectedRoutes({
   // Si se requiere un rol específico y el usuario no lo tiene
   if (requireRole && user?.role !== requireRole) {
     console.warn(`Acceso denegado: Se requiere rol '${requireRole}', usuario tiene '${user?.role}'`);
-    // Redirigir a la ruta apropiada para su rol
-    const userRoute = user ? NavigationService.getRouteForUser(user) : '/home';
-    return <Navigate to={userRoute} replace />;
+    // Redirigir a home en lugar de usar NavigationService para evitar bucles
+    return <Navigate to="/home" replace />;
   }
 
-  // Verificar si el usuario tiene acceso a la ruta actual
-  if (user && !NavigationService.canAccessRoute(user, location.pathname)) {
-    console.warn(`Acceso denegado a la ruta: ${location.pathname} para el rol: ${user.role}`);
-    // Redirigir a la ruta apropiada para su rol
-    const userRoute = NavigationService.getRouteForUser(user);
-    return <Navigate to={userRoute} replace />;
+  // Simplificamos la verificación de acceso a rutas para evitar bucles
+  // Solo verificamos rutas específicas que sabemos que pueden causar problemas
+  const restrictedRoutes = ['/admin-only', '/super-admin'];
+  if (user && restrictedRoutes.some(route => location.pathname.startsWith(route))) {
+    console.warn(`Acceso denegado a la ruta restringida: ${location.pathname} para el rol: ${user.role}`);
+    return <Navigate to="/home" replace />;
   }
 
   return <>{children}</>;

@@ -21,32 +21,156 @@ export default function AppRoutes() {
       <Routes>
         <Route 
           path="/login" 
-          element={<Login />} 
+          element={
+            !isAuthenticated ? (
+              <Login />
+            ) : (
+              <Navigate to="/home" replace />
+            )
+          } 
         />
+        
+        {/* Rutas protegidas sin anidamiento problemático */}
         <Route
-          path="/*"
+          path="/"
           element={
             <ProtectedRoutes isAuthenticated={isAuthenticated}>
               <Navbar />
-              
               <main style={{ flex: 1, padding: '1rem' }}>
-                <Routes>
-                  <Route path="/" element={<Navigate to="/home" replace />} />
-                  <Route path="/home" element={<HomePage />} />
-                  <Route path="/inventory" element={<TemporaryPage title="Inventory" />} />
-                  <Route path="/inventory/equipos" element={<TemporaryPage title="Equipos" />} />
-                  <Route path="/inventory/consumibles" element={<TemporaryPage title="Consumibles" />} />
-                  <Route path="/resources" element={<TemporaryPage title="Resources" />} />
-                  <Route path="/resources/prestamos" element={<TemporaryPage title="Préstamos" />} />
-                  <Route path="/resources/consumos" element={<TemporaryPage title="Consumos" />} />
-                  <Route path="/users" element={<TemporaryPage title="Users" />} />
-                  <Route path="/users/monitor" element={<TemporaryPage title="Monitor Usuario" />} />
-                  <Route path="/users/prestamistas" element={<TemporaryPage title="Prestamistas" />} />
-                  <Route path="*" element={<Navigate to="/home" replace />} />
-                </Routes>
+                <Navigate to="/home" replace />
               </main>
             </ProtectedRoutes>
           }
+        />
+        
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '1rem' }}>
+                <HomePage />
+              </main>
+            </ProtectedRoutes>
+          }
+        />
+        
+        <Route
+          path="/inventory"
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '1rem' }}>
+                <TemporaryPage title="Inventory" />
+              </main>
+            </ProtectedRoutes>
+          }
+        />
+        
+        <Route
+          path="/inventory/equipos"
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '1rem' }}>
+                <TemporaryPage title="Equipos" />
+              </main>
+            </ProtectedRoutes>
+          }
+        />
+        
+        <Route
+          path="/inventory/consumibles"
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '1rem' }}>
+                <TemporaryPage title="Consumibles" />
+              </main>
+            </ProtectedRoutes>
+          }
+        />
+        
+        <Route
+          path="/resources"
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '1rem' }}>
+                <TemporaryPage title="Resources" />
+              </main>
+            </ProtectedRoutes>
+          }
+        />
+        
+        <Route
+          path="/resources/prestamos"
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '1rem' }}>
+                <TemporaryPage title="Préstamos" />
+              </main>
+            </ProtectedRoutes>
+          }
+        />
+        
+        <Route
+          path="/resources/consumos"
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '1rem' }}>
+                <TemporaryPage title="Consumos" />
+              </main>
+            </ProtectedRoutes>
+          }
+        />
+        
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '1rem' }}>
+                <TemporaryPage title="Users" />
+              </main>
+            </ProtectedRoutes>
+          }
+        />
+        
+        <Route
+          path="/users/monitor"
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '1rem' }}>
+                <TemporaryPage title="Monitor Usuario" />
+              </main>
+            </ProtectedRoutes>
+          }
+        />
+        
+        <Route
+          path="/users/prestamistas"
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '1rem' }}>
+                <TemporaryPage title="Prestamistas" />
+              </main>
+            </ProtectedRoutes>
+          }
+        />
+        
+        {/* Cualquier otra ruta no encontrada redirige a home */}
+        <Route 
+          path="*" 
+          element={
+            <ProtectedRoutes isAuthenticated={isAuthenticated}>
+              <Navigate to="/home" replace />
+            </ProtectedRoutes>
+          } 
         />
       </Routes>
     </div>

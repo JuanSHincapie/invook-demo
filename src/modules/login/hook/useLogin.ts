@@ -1,11 +1,12 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../shared/hooks/useAuth';
 import { NavigationService } from '../../../shared/services/NavigationService';
 import type { LoginFormState } from '../model/Login';
 
 export function useLogin() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   
   const [formState, setFormState] = useState<LoginFormState>({
@@ -15,6 +16,13 @@ export function useLogin() {
     isLoading: false,
   });
 
+  // Efecto para limpiar el estado de loading si el usuario navega fuera del login
+  useEffect(() => {
+    if (location.pathname !== '/login' && formState.isLoading) {
+      setFormState(prev => ({ ...prev, isLoading: false }));
+    }
+  }, [location.pathname, formState.isLoading]);
+
   const updateField = useCallback((field: keyof Omit<LoginFormState, 'error' | 'isLoading'>, value: string) => {
     setFormState(prev => ({
       ...prev,
@@ -23,65 +31,56 @@ export function useLogin() {
     }));
   }, []);
 
+  const setLoading = (loading: boolean) => {
+    setFormState(prev => ({ ...prev, isLoading: loading }));
+  };
+
+  const setError = (error: string) => {
+    setFormState(prev => ({ ...prev, error, isLoading: false }));
+  };
+
+  const performLogin = useCallback(async (username: string, password: string) => {
+    try {
+      const result = await login(username, password);
+      
+      if (result.success && result.user) {
+        const destinationRoute = NavigationService.getRouteForUser(result.user);
+        
+        // Resetear el estado de loading y navegar
+        setLoading(false);
+        
+        // Usar setTimeout para asegurar que la navegación ocurra después de actualizar el estado
+        setTimeout(() => {
+          navigate(destinationRoute, { replace: true });
+        }, 100);
+        return;
+      }
+      
+      if (result.user && !NavigationService.isAuthorizedRole(result.user)) {
+        setError(`Acceso denegado. El rol '${result.user?.role}' no tiene permisos para acceder al sistema.`);
+        return;
+      }
+      
+      setError('Credenciales inválidas. Por favor, verifica tu usuario y contraseña.');
+      
+    } catch (error) {
+      console.error('useLogin: Error durante el login:', error);
+      setError('Error al iniciar sesión. Intenta nuevamente.');
+    }
+  }, [login, navigate]);
+
   const handleLogin = useCallback(async () => {
-    if (!formState.username || !formState.password) {
-      setFormState(prev => ({
-        ...prev,
-        error: 'Por favor, completa todos los campos',
-      }));
+    const { username, password } = formState;
+    
+    if (!username || !password) {
+      setError('Por favor, completa todos los campos');
       return;
     }
 
-    console.log('useLogin: Iniciando proceso de login');
-    setFormState(prev => ({
-      ...prev,
-      isLoading: true,
-      error: '',
-    }));
-
-    try {
-      console.log('useLogin: Llamando a login con credenciales');
-      const result = await login(formState.username, formState.password);
-      console.log('useLogin: Resultado del login:', result);
-      
-      if (result.success && result.user) {
-        console.log('useLogin: Login exitoso');
-        
-        // Resetear el estado de loading antes de navegar
-        setFormState(prev => ({
-          ...prev,
-          isLoading: false,
-        }));
-        
-        // Usar el NavigationService para determinar la ruta basada en el rol
-        const destinationRoute = NavigationService.getRouteForUser(result.user);
-        console.log('useLogin: Navegando a:', destinationRoute);
-        navigate(destinationRoute);
-      } else if (result.user && !NavigationService.isAuthorizedRole(result.user)) {
-        // Usuario válido pero sin rol autorizado
-        console.log('useLogin: Usuario sin autorización para acceder');
-        setFormState(prev => ({
-          ...prev,
-          error: `Acceso denegado. El rol '${result.user?.role}' no tiene permisos para acceder al sistema.`,
-          isLoading: false,
-        }));
-      } else {
-        console.log('useLogin: Login falló');
-        setFormState(prev => ({
-          ...prev,
-          error: 'Credenciales inválidas. Por favor, verifica tu usuario y contraseña.',
-          isLoading: false,
-        }));
-      }
-    } catch (error) {
-      console.error('useLogin: Error durante el login:', error);
-      setFormState(prev => ({
-        ...prev,
-        error: 'Error al iniciar sesión. Intenta nuevamente.',
-        isLoading: false,
-      }));
-    }
-  }, [formState.username, formState.password, login, navigate]);
+    setLoading(true);
+    
+    await performLogin(username, password);
+  }, [formState, performLogin]);
 
   return {
     formState,

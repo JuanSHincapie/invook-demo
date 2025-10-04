@@ -39,26 +39,20 @@ export function AuthService() {
       }
       
       // Llamada real a la API
-      console.log('AuthService: Realizando llamada real a la API');
       const response = await apiService.post<LoginResponse>(
         'auth/login/',
         credentials
       );
       
-      console.log('AuthService: Respuesta de la API:', response);
-      
       // Guardar tokens y usuario en el almacenamiento
       if (response.access) {
         sessionStorage.setItem(ACCESS_TOKEN_KEY, response.access);
-        console.log('AuthService: Token de acceso guardado');
       }
       if (response.refresh) {
         sessionStorage.setItem(REFRESH_TOKEN_KEY, response.refresh);
-        console.log('AuthService: Token de refresh guardado');
       }
       if (response.user) {
         localStorage.setItem(USER_KEY, JSON.stringify(response.user));
-        console.log('AuthService: Usuario guardado:', response.user);
       }
       
       return response;
