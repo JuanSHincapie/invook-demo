@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import { useGetSupplies } from "../../hooks/supply/useGetSupplies";
 import SupplyHeader from "./SupplyHeader";
 import SupplyTable from "./SupplyTable";
+import SupplyFormDialog from "./SupplyFormDialog";
 import type { Supply } from "../../model/Supply";
 
 const MainSupply = () => {
@@ -16,9 +17,8 @@ const MainSupply = () => {
     loading, 
     error, 
     searchSupplies, 
-    filterByAccount, 
-    getLowStock,
-    clearFilters 
+    clearFilters,
+    refetch 
   } = useGetSupplies();
   
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -70,23 +70,16 @@ const MainSupply = () => {
     setSelectedSupply(null);
   }, []);
 
+  const handleFormSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   const handleSearch = useCallback(
     (searchTerm: string) => {
       searchSupplies(searchTerm);
     },
     [searchSupplies]
   );
-
-  const handleFilterByAccount = useCallback(
-    (cuenta: string) => {
-      filterByAccount(cuenta);
-    },
-    [filterByAccount]
-  );
-
-  const handleLowStock = useCallback(() => {
-    getLowStock(10); 
-  }, [getLowStock]);
 
   const handleClearFilters = useCallback(() => {
     clearFilters();
@@ -97,7 +90,7 @@ const MainSupply = () => {
   }, [navigate]);
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth={false} sx={{ maxWidth: "1600px", mx: "auto" }}>
       <Box sx={{ py: 4 }}>
         <Box
           sx={{
@@ -113,8 +106,6 @@ const MainSupply = () => {
             onBack={handleBackToInventory}
             onAddNew={handleAddNew}
             onSearch={handleSearch}
-            onFilterByAccount={handleFilterByAccount}
-            onLowStock={handleLowStock}
             onClearFilters={handleClearFilters}
             totalCount={supplies.length}
           />
@@ -126,6 +117,7 @@ const MainSupply = () => {
             border: "1px solid",
             borderColor: "grey.300",
             borderRadius: 2,
+            width: "100%",
           }}
         >
           <SupplyTable
@@ -136,12 +128,11 @@ const MainSupply = () => {
             onDelete={handleDelete}
           />
         </Box>
-        {isFormOpen && (
-          <Box sx={{ p: 2, bgcolor: "info.light", borderRadius: 2, mt: 2 }}>
-            <div>FormDialog: {isFormOpen.toString()}</div>
-            <button onClick={handleFormClose}>Cerrar</button>
-          </Box>
-        )}
+        <SupplyFormDialog
+          open={isFormOpen}
+          onClose={handleFormClose}
+          onSuccess={handleFormSuccess}
+        />
 
         {isEditOpen && (
           <Box sx={{ p: 2, bgcolor: "warning.light", borderRadius: 2, mt: 2 }}>

@@ -55,7 +55,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
     if (loading) {
       return (
         <TableRow>
-          <TableCell colSpan={7} sx={{ textAlign: "center", py: 4 }}>
+          <TableCell colSpan={8} sx={{ textAlign: "center", py: 4 }}>
             <CircularProgress size={24} />
             <Typography variant="body2" sx={{ mt: 1, color: "#000" }}>
               Cargando suministros...
@@ -68,7 +68,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
     if (error) {
       return (
         <TableRow>
-          <TableCell colSpan={7} sx={{ textAlign: "center", py: 4 }}>
+          <TableCell colSpan={8} sx={{ textAlign: "center", py: 4 }}>
             <Alert severity="error" sx={{ justifyContent: "center" }}>
               {error}
             </Alert>
@@ -80,7 +80,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
     if (supplies.length === 0) {
       return (
         <TableRow>
-          <TableCell colSpan={7} sx={{ textAlign: "center", py: 4 }}>
+          <TableCell colSpan={8} sx={{ textAlign: "center", py: 4 }}>
             <Typography variant="body2" sx={{ color: "#000" }}>
               No hay suministros registrados
             </Typography>
@@ -98,23 +98,51 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
           cursor: "pointer",
         }}
       >
-        <TableCell sx={{ fontFamily: "monospace", fontSize: "0.875rem", color: "#000" }}>
+        <TableCell sx={{ 
+          fontFamily: "monospace", 
+          fontSize: "0.875rem", 
+          color: "#000",
+          width: "18%",
+          wordBreak: "break-all"
+        }}>
           {supply.code}
         </TableCell>
-        <TableCell sx={{ fontWeight: "medium", color: "#000" }}>
+        <TableCell sx={{ width: "12%" }}>
+          <Chip
+            label={supply.supply_type}
+            size="small"
+            variant="filled"
+            sx={{
+              borderRadius: 1,
+              backgroundColor: "primary.100",
+              color: "primary.800",
+              fontWeight: "medium",
+              fontSize: "0.75rem",
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ 
+          fontWeight: "medium", 
+          color: "#000",
+          width: "16%",
+          wordBreak: "break-word"
+        }}>
           {supply.name}
         </TableCell>
-        <TableCell sx={{ color: "#000", fontSize: "0.875rem", maxWidth: 300 }}>
+        <TableCell sx={{ 
+          color: "#000", 
+          fontSize: "0.875rem", 
+          width: "28%"
+        }}>
           <Typography variant="body2" sx={{ 
-            overflow: "hidden", 
-            textOverflow: "ellipsis", 
-            whiteSpace: "nowrap",
-            color: "#000"
+            color: "#000",
+            wordBreak: "break-word",
+            lineHeight: 1.4
           }}>
             {supply.description}
           </Typography>
         </TableCell>
-        <TableCell>
+        <TableCell sx={{ width: "8%" }}>
           <Chip
             label={supply.count}
             size="small"
@@ -126,7 +154,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
             }}
           />
         </TableCell>
-        <TableCell sx={{ textAlign: "right" }}>
+        <TableCell sx={{ textAlign: "right", width: "10%" }}>
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 1 }}>
             {getStockIcon(supply.stock, supply.quantity)}
             <Chip
@@ -137,12 +165,12 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
             />
           </Box>
         </TableCell>
-        <TableCell sx={{ textAlign: "right" }}>
+        <TableCell sx={{ textAlign: "right", width: "8%" }}>
           <Typography variant="body2" sx={{ fontWeight: "medium", color: "#000" }}>
             {formatNumber(supply.quantity)}
           </Typography>
         </TableCell>
-        <TableCell sx={{ textAlign: "center" }}>
+        <TableCell sx={{ textAlign: "center", width: "auto" }}>
           <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
             <IconButton
               size="small"
@@ -171,6 +199,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
         borderRadius: 0,
         boxShadow: "none",
         height: "100%",
+        width: "100%",
         "& .MuiTable-root": {
           "& .MuiTableHead-root": {
             position: "sticky",
@@ -184,7 +213,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
         },
       }}
     >
-      <Table sx={{ minWidth: 650 }} stickyHeader>
+      <Table sx={{ width: "100%", tableLayout: "auto" }} stickyHeader>
         <TableHead>
           <TableRow sx={{ bgcolor: "grey.100" }}>
             <TableCell
@@ -194,6 +223,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
                 color: "#000",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
+                width: "18%",
               }}
             >
               Código
@@ -205,6 +235,19 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
                 color: "#000",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
+                width: "12%",
+              }}
+            >
+              Tipo
+            </TableCell>
+            <TableCell
+              sx={{
+                fontWeight: "bold",
+                fontSize: "0.875rem",
+                color: "#000",
+                backgroundColor: "grey.100",
+                borderBottom: "2px solid #e0e0e0",
+                width: "16%",
               }}
             >
               Nombre
@@ -216,6 +259,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
                 color: "#000",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
+                width: "28%",
               }}
             >
               Descripción
@@ -227,6 +271,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
                 color: "#000",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
+                width: "8%",
               }}
             >
               Cuenta
@@ -239,6 +284,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
                 textAlign: "right",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
+                width: "10%",
               }}
             >
               Existencia
@@ -251,6 +297,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
                 textAlign: "right",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
+                width: "8%",
               }}
             >
               Cantidad
@@ -263,6 +310,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
                 color: "#000",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
+                width: "auto",
               }}
             >
               Acciones
