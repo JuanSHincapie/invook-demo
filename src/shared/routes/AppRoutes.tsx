@@ -4,8 +4,10 @@ import { useAuth } from '../hooks/useAuth';
 import Login from '../../modules/login/components/Login';
 import Navbar from '../navbar/components/Navbar';
 import HomePage from '../../modules/home/components/HomePage';
+import MainInventory from '../../modules/inventory/components/MainInventory';
+import MainHardware from '../../modules/inventory/components/hardware/MainHardware';
 
-// Componentes temporales - estos deberían ser reemplazados por los componentes reales
+
 const TemporaryPage = ({ title }: { title: string }) => (
   <div style={{ padding: '20px' }}>
     <h1>{title}</h1>
@@ -29,8 +31,6 @@ export default function AppRoutes() {
             )
           } 
         />
-        
-        {/* Rutas protegidas sin anidamiento problemático */}
         <Route
           path="/"
           element={
@@ -61,7 +61,7 @@ export default function AppRoutes() {
             <ProtectedRoutes isAuthenticated={isAuthenticated}>
               <Navbar />
               <main style={{ flex: 1, padding: '1rem' }}>
-                <TemporaryPage title="Inventory" />
+                <MainInventory />
               </main>
             </ProtectedRoutes>
           }
@@ -73,7 +73,7 @@ export default function AppRoutes() {
             <ProtectedRoutes isAuthenticated={isAuthenticated}>
               <Navbar />
               <main style={{ flex: 1, padding: '1rem' }}>
-                <TemporaryPage title="Equipos" />
+                <MainHardware />
               </main>
             </ProtectedRoutes>
           }
