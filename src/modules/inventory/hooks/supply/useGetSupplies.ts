@@ -1,8 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { 
-  getSupplies, 
-  searchSupplies,
-} from "../../service/supply/getSupplies";
+import { getSupplies, searchSupplies } from "../../service/supply/getSupplies";
 import type { Supply } from "../../model/Supply";
 
 interface UseGetSuppliesReturn {
@@ -11,8 +8,6 @@ interface UseGetSuppliesReturn {
   error: string | null;
   refetch: () => Promise<void>;
   searchSupplies: (searchTerm: string) => Promise<void>;
-  filterByAccount: (cuenta: string) => Promise<void>;
-  getLowStock: (minExistencia?: number) => Promise<void>;
   clearFilters: () => Promise<void>;
 }
 
@@ -29,7 +24,11 @@ export const useGetSupplies = (): UseGetSuppliesReturn => {
       setSupplies(data);
     } catch (err) {
       console.error("Error al cargar suministros:", err);
-      setError(err instanceof Error ? err.message : "Error desconocido al cargar suministros");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Error desconocido al cargar suministros"
+      );
     } finally {
       setLoading(false);
     }
@@ -43,35 +42,9 @@ export const useGetSupplies = (): UseGetSuppliesReturn => {
       setSupplies(data);
     } catch (err) {
       console.error("Error al buscar suministros:", err);
-      setError(err instanceof Error ? err.message : "Error al buscar suministros");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const handleFilterByAccount = useCallback(async (cuenta: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getSuppliesByAccount(cuenta);
-      setSupplies(data);
-    } catch (err) {
-      console.error("Error al filtrar suministros por cuenta:", err);
-      setError(err instanceof Error ? err.message : "Error al filtrar suministros");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const handleGetLowStock = useCallback(async (minExistencia: number = 10) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getLowStockSupplies(minExistencia);
-      setSupplies(data);
-    } catch (err) {
-      console.error("Error al obtener suministros con existencia baja:", err);
-      setError(err instanceof Error ? err.message : "Error al obtener suministros con existencia baja");
+      setError(
+        err instanceof Error ? err.message : "Error al buscar suministros"
+      );
     } finally {
       setLoading(false);
     }
@@ -91,8 +64,6 @@ export const useGetSupplies = (): UseGetSuppliesReturn => {
     error,
     refetch: loadAllSupplies,
     searchSupplies: handleSearchSupplies,
-    filterByAccount: handleFilterByAccount,
-    getLowStock: handleGetLowStock,
     clearFilters,
   };
 };
