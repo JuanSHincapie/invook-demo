@@ -8,6 +8,8 @@ import { useGetSupplies } from "../../hooks/supply/useGetSupplies";
 import SupplyHeader from "./SupplyHeader";
 import SupplyTable from "./SupplyTable";
 import SupplyFormDialog from "./SupplyFormDialog";
+import SupplyEditDialog from "./SupplyEditDialog";
+import SupplyDeleteDialog from "./SupplyDeleteDialog";
 import type { Supply } from "../../model/Supply";
 
 const MainSupply = () => {
@@ -74,6 +76,14 @@ const MainSupply = () => {
     refetch();
   }, [refetch]);
 
+  const handleEditSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleDeleteSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   const handleSearch = useCallback(
     (searchTerm: string) => {
       searchSupplies(searchTerm);
@@ -133,20 +143,18 @@ const MainSupply = () => {
           onClose={handleFormClose}
           onSuccess={handleFormSuccess}
         />
-
-        {isEditOpen && (
-          <Box sx={{ p: 2, bgcolor: "warning.light", borderRadius: 2, mt: 2 }}>
-            <div>EditDialog: {selectedSupply?.name}</div>
-            <button onClick={handleEditClose}>Cerrar</button>
-          </Box>
-        )}
-
-        {isDeleteOpen && (
-          <Box sx={{ p: 2, bgcolor: "error.light", borderRadius: 2, mt: 2 }}>
-            <div>DeleteDialog: {selectedSupply?.name}</div>
-            <button onClick={handleDeleteClose}>Cerrar</button>
-          </Box>
-        )}
+        <SupplyEditDialog
+          open={isEditOpen}
+          onClose={handleEditClose}
+          onSuccess={handleEditSuccess}
+          supply={selectedSupply}
+        />
+        <SupplyDeleteDialog
+          open={isDeleteOpen}
+          onClose={handleDeleteClose}
+          onSuccess={handleDeleteSuccess}
+          supply={selectedSupply}
+        />
       </Box>
     </Container>
   );
