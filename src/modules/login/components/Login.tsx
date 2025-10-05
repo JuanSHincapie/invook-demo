@@ -3,7 +3,6 @@ import { LoginForm } from './LoginForm';
 
 export default function Login() {
   const handleLoginSuccess = () => {
-    console.log('Login exitoso');
   };
 
   return (

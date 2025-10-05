@@ -16,7 +16,6 @@ export function useLogin() {
     isLoading: false,
   });
 
-  // Efecto para limpiar el estado de loading si el usuario navega fuera del login
   useEffect(() => {
     if (location.pathname !== '/login' && formState.isLoading) {
       setFormState(prev => ({ ...prev, isLoading: false }));
@@ -27,7 +26,7 @@ export function useLogin() {
     setFormState(prev => ({
       ...prev,
       [field]: value,
-      error: '', // Limpiar error al cambiar campos
+      error: '',
     }));
   }, []);
 
@@ -46,10 +45,8 @@ export function useLogin() {
       if (result.success && result.user) {
         const destinationRoute = NavigationService.getRouteForUser(result.user);
         
-        // Resetear el estado de loading y navegar
         setLoading(false);
         
-        // Usar setTimeout para asegurar que la navegación ocurra después de actualizar el estado
         setTimeout(() => {
           navigate(destinationRoute, { replace: true });
         }, 100);
@@ -64,7 +61,7 @@ export function useLogin() {
       setError('Credenciales inválidas. Por favor, verifica tu usuario y contraseña.');
       
     } catch (error) {
-      console.error('useLogin: Error durante el login:', error);
+      console.error(error)
       setError('Error al iniciar sesión. Intenta nuevamente.');
     }
   }, [login, navigate]);

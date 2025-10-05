@@ -24,7 +24,6 @@ export const useGetHardware = (): UseGetHardwareReturn => {
       const data = await getHardware();
       setHardware(data);
     } catch (err) {
-      console.error('Error al cargar hardware:', err);
       setError(err instanceof Error ? err.message : 'Error desconocido al cargar hardware');
     } finally {
       setLoading(false);
@@ -38,7 +37,6 @@ export const useGetHardware = (): UseGetHardwareReturn => {
       const data = await getHardwareByType(type);
       setHardware(data);
     } catch (err) {
-      console.error('Error al filtrar hardware por tipo:', err);
       setError(err instanceof Error ? err.message : 'Error al filtrar hardware');
     } finally {
       setLoading(false);
@@ -52,7 +50,6 @@ export const useGetHardware = (): UseGetHardwareReturn => {
       const data = await searchHardwareByType(searchTerm);
       setHardware(data);
     } catch (err) {
-      console.error('Error al buscar hardware por tipo:', err);
       setError(err instanceof Error ? err.message : 'Error al buscar hardware');
     } finally {
       setLoading(false);

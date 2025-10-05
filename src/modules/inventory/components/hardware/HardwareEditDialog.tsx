@@ -95,13 +95,10 @@ export const HardwareEditDialog = ({
       changedFields.available = formData.available;
     }
 
-    // Verificar si hay cambios
     if (Object.keys(changedFields).length === 0) {
       onClose();
       return;
     }
-
-    console.log('Enviando cambios:', changedFields);
 
     const result = await updateHardware(hardware.serial, changedFields);
     

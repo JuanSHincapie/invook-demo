@@ -34,15 +34,10 @@ export const useUpdateHardware = (): UseUpdateHardwareReturn => {
       setLoading(true);
       setError(null);
       
-      console.log('Iniciando actualización de hardware:', { serial, updateData });
-      
       const result = await updateHardwareWithValidation(serial, updateData);
-      
-      console.log('Hardware actualizado exitosamente:', result);
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error desconocido al actualizar hardware';
-      console.error('Error en actualización de hardware:', err);
       setError(errorMessage);
       return null;
     } finally {
@@ -58,15 +53,12 @@ export const useUpdateHardware = (): UseUpdateHardwareReturn => {
       setLoading(true);
       setError(null);
       
-      console.log('Actualizando estado de hardware:', { serial, state });
       
       const result = await updateHardwareState(serial, state);
       
-      console.log('Estado actualizado exitosamente:', result);
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al actualizar estado del hardware';
-      console.error('Error al actualizar estado:', err);
       setError(errorMessage);
       return null;
     } finally {
@@ -82,15 +74,10 @@ export const useUpdateHardware = (): UseUpdateHardwareReturn => {
       setLoading(true);
       setError(null);
       
-      console.log('Actualizando disponibilidad de hardware:', { serial, available });
-      
       const result = await updateHardwareAvailability(serial, available);
-      
-      console.log('Disponibilidad actualizada exitosamente:', result);
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al actualizar disponibilidad del hardware';
-      console.error('Error al actualizar disponibilidad:', err);
       setError(errorMessage);
       return null;
     } finally {
@@ -106,15 +93,10 @@ export const useUpdateHardware = (): UseUpdateHardwareReturn => {
       setLoading(true);
       setError(null);
       
-      console.log('Actualizando información básica de hardware:', { serial, basicInfo });
-      
       const result = await updateHardwareBasicInfo(serial, basicInfo);
-      
-      console.log('Información básica actualizada exitosamente:', result);
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al actualizar información del hardware';
-      console.error('Error al actualizar información básica:', err);
       setError(errorMessage);
       return null;
     } finally {

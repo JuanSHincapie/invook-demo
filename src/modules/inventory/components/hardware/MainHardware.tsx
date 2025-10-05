@@ -6,6 +6,7 @@ import { HardwareHeader } from "./HardwareHeader";
 import { HardwareTable } from "./HardwareTable";
 import { HardwareFormDialog } from "./HardwareFormDialog";
 import HardwareEditDialog from "./HardwareEditDialog";
+import HardwareDeactivateDialog from "./HardwareDeactivateDialog";
 import type { Hardware } from "../../model/Hardware";
 
 const HardwarePage = () => {
@@ -14,6 +15,7 @@ const HardwarePage = () => {
     useGetHardware();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeactivateOpen, setIsDeactivateOpen] = useState(false);
   const [selectedHardware, setSelectedHardware] = useState<Hardware | null>(
     null
   );
@@ -24,16 +26,21 @@ const HardwarePage = () => {
       if (hardwareToEdit) {
         setSelectedHardware(hardwareToEdit);
         setIsEditOpen(true);
-      } else {
-        console.error("Hardware no encontrado:", serial);
-      }
+      } 
     },
     [hardware]
   );
 
-  const handleDelete = useCallback((serial: string) => {
-    console.log("Eliminar equipo:", serial);
-  }, []);
+  const handleDelete = useCallback(
+    (serial: string) => {
+      const hardwareToDeactivate = hardware.find((hw) => hw.serial === serial);
+      if (hardwareToDeactivate) {
+        setSelectedHardware(hardwareToDeactivate);
+        setIsDeactivateOpen(true);
+      }
+    },
+    [hardware]
+  );
 
   const handleAddNew = useCallback(() => {
     setIsFormOpen(true);
@@ -48,21 +55,22 @@ const HardwarePage = () => {
     setSelectedHardware(null);
   }, []);
 
-  const handleFormSuccess = useCallback(
-    (newHardware: Hardware) => {
-      console.log("Hardware creado exitosamente:", newHardware);
-      refetch();
-    },
-    [refetch]
-  );
+  const handleDeactivateClose = useCallback(() => {
+    setIsDeactivateOpen(false);
+    setSelectedHardware(null);
+  }, []);
 
-  const handleEditSuccess = useCallback(
-    (updatedHardware: Hardware) => {
-      console.log("Hardware actualizado exitosamente:", updatedHardware);
-      refetch();
-    },
-    [refetch]
-  );
+  const handleFormSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleEditSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleDeactivateSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   const handleSearch = useCallback(
     (searchTerm: string) => {
@@ -100,6 +108,7 @@ const HardwarePage = () => {
             totalCount={hardware.length}
           />
         </Box>
+
         <Box
           sx={{
             maxHeight: "600px",
@@ -129,6 +138,13 @@ const HardwarePage = () => {
           hardware={selectedHardware}
           onClose={handleEditClose}
           onSuccess={handleEditSuccess}
+        />
+
+        <HardwareDeactivateDialog
+          open={isDeactivateOpen}
+          hardware={selectedHardware}
+          onClose={handleDeactivateClose}
+          onSuccess={handleDeactivateSuccess}
         />
       </Box>
     </Container>
