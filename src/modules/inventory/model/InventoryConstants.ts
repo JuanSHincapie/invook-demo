@@ -1,6 +1,5 @@
 import type { InventoryStatus } from './InventoryTypes';
 
-// Estados de inventario con labels legibles
 export const INVENTORY_STATUS_OPTIONS: Array<{
   value: InventoryStatus;
   label: string;
@@ -12,7 +11,6 @@ export const INVENTORY_STATUS_OPTIONS: Array<{
   { value: 'retired', label: 'Retirado', color: '#f44336' },
 ];
 
-// Categorías predefinidas para equipos
 export const EQUIPMENT_CATEGORIES = [
   'Computadores',
   'Laptops',
@@ -27,8 +25,6 @@ export const EQUIPMENT_CATEGORIES = [
   'Servidores',
   'Otros',
 ] as const;
-
-// Categorías predefinidas para suministros
 export const SUPPLY_CATEGORIES = [
   'Papel',
   'Tóner/Cartuchos',
@@ -42,7 +38,6 @@ export const SUPPLY_CATEGORIES = [
   'Otros',
 ] as const;
 
-// Unidades de medida para suministros
 export const UNIT_OF_MEASURE_OPTIONS = [
   'Unidad',
   'Caja',
@@ -54,7 +49,6 @@ export const UNIT_OF_MEASURE_OPTIONS = [
   'Rollo',
 ] as const;
 
-// Ubicaciones predefinidas
 export const LOCATION_OPTIONS = [
   'Oficina Principal',
   'Sucursal Norte',
@@ -68,21 +62,18 @@ export const LOCATION_OPTIONS = [
   'Mantenimiento',
 ] as const;
 
-// Configuración de paginación
 export const PAGINATION_CONFIG = {
   DEFAULT_PAGE_SIZE: 10,
   PAGE_SIZE_OPTIONS: [5, 10, 25, 50, 100],
   MAX_PAGE_SIZE: 100,
 } as const;
 
-// Configuración de alertas de stock
 export const STOCK_ALERTS = {
-  LOW_STOCK_THRESHOLD: 0.2, // 20% del stock mínimo
-  CRITICAL_STOCK_THRESHOLD: 0.1, // 10% del stock mínimo
-  EXPIRY_WARNING_DAYS: 30, // Alertar 30 días antes de expiración
+  LOW_STOCK_THRESHOLD: 0.2, 
+  CRITICAL_STOCK_THRESHOLD: 0.1,
+  EXPIRY_WARNING_DAYS: 30,
 } as const;
 
-// Rutas del módulo de inventario
 export const INVENTORY_ROUTES = {
   MAIN: '/inventory',
   EQUIPMENT: '/inventory/equipos',
@@ -94,7 +85,6 @@ export const INVENTORY_ROUTES = {
   REPORTS: '/inventory/reportes',
 } as const;
 
-// Mensajes de validación
 export const VALIDATION_MESSAGES = {
   REQUIRED: 'Este campo es obligatorio',
   MIN_LENGTH: (min: number) => `Debe tener al menos ${min} caracteres`,

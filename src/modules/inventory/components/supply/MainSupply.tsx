@@ -104,8 +104,7 @@ const MainSupply = () => {
     refetch();
   }, [refetch]);
 
-  const handleRestockSuccess = useCallback((updatedSupply: Supply) => {
-    console.log("Suministro reabastecido exitosamente:", updatedSupply);
+  const handleRestockSuccess = useCallback(() => {
     refetch();
   }, [refetch]);
 

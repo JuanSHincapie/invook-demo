@@ -44,8 +44,6 @@ export const HardwareEditDialog = ({
     state: '',
     available: '',
   });
-
-  // Inicializar formulario con datos del hardware
   useEffect(() => {
     if (hardware && open) {
       setFormData({
@@ -75,8 +73,6 @@ export const HardwareEditDialog = ({
     if (!hardware?.serial) {
       return;
     }
-
-    // Preparar solo los campos que han cambiado
     const changedFields: UpdateHardwareRequest = {};
     
     if (formData.name !== hardware.name) {

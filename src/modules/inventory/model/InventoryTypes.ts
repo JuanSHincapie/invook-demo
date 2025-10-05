@@ -1,4 +1,3 @@
-// Tipos base para el inventario
 export interface BaseInventoryItem {
   id: string;
   name: string;
