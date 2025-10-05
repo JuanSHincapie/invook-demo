@@ -10,6 +10,7 @@ import SupplyTable from "./SupplyTable";
 import SupplyFormDialog from "./SupplyFormDialog";
 import SupplyEditDialog from "./SupplyEditDialog";
 import SupplyDeleteDialog from "./SupplyDeleteDialog";
+import SupplyRestockDialog from "./SupplyRestockDialog";
 import type { Supply } from "../../model/Supply";
 
 const MainSupply = () => {
@@ -26,6 +27,7 @@ const MainSupply = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isRestockOpen, setIsRestockOpen] = useState(false);
   const [selectedSupply, setSelectedSupply] = useState<Supply | null>(null);
 
   const handleEdit = useCallback(
@@ -54,6 +56,19 @@ const MainSupply = () => {
     [supplies]
   );
 
+  const handleRestock = useCallback(
+    (code: string) => {
+      const supplyToRestock = supplies.find((supply) => supply.code === code);
+      if (supplyToRestock) {
+        setSelectedSupply(supplyToRestock);
+        setIsRestockOpen(true);
+      } else {
+        console.error("Suministro no encontrado:", code);
+      }
+    },
+    [supplies]
+  );
+
   const handleAddNew = useCallback(() => {
     setIsFormOpen(true);
   }, []);
@@ -72,6 +87,11 @@ const MainSupply = () => {
     setSelectedSupply(null);
   }, []);
 
+  const handleRestockClose = useCallback(() => {
+    setIsRestockOpen(false);
+    setSelectedSupply(null);
+  }, []);
+
   const handleFormSuccess = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -81,6 +101,11 @@ const MainSupply = () => {
   }, [refetch]);
 
   const handleDeleteSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleRestockSuccess = useCallback((updatedSupply: Supply) => {
+    console.log("Suministro reabastecido exitosamente:", updatedSupply);
     refetch();
   }, [refetch]);
 
@@ -136,6 +161,7 @@ const MainSupply = () => {
             error={error}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onRestock={handleRestock}
           />
         </Box>
         <SupplyFormDialog
@@ -153,6 +179,12 @@ const MainSupply = () => {
           open={isDeleteOpen}
           onClose={handleDeleteClose}
           onSuccess={handleDeleteSuccess}
+          supply={selectedSupply}
+        />
+        <SupplyRestockDialog
+          open={isRestockOpen}
+          onClose={handleRestockClose}
+          onSuccess={handleRestockSuccess}
           supply={selectedSupply}
         />
       </Box>

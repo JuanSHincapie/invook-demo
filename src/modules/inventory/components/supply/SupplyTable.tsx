@@ -17,6 +17,7 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Warning as WarningIcon,
+  Inventory as InventoryIcon,
 } from "@mui/icons-material";
 import { useMemo } from "react";
 import type { Supply } from "../../model/Supply";
@@ -27,6 +28,7 @@ interface SupplyTableProps {
   error: string | null;
   onEdit: (codigo: string) => void;
   onDelete: (codigo: string) => void;
+  onRestock: (codigo: string) => void;
 }
 
 const getStockColor = (existencia: number, cantidad: number): "success" | "warning" | "error" => {
@@ -50,7 +52,7 @@ const formatNumber = (num: number): string => {
   return new Intl.NumberFormat("es-CO").format(num);
 };
 
-export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: SupplyTableProps) => {
+export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete, onRestock }: SupplyTableProps) => {
   const tableContent = useMemo(() => {
     if (loading) {
       return (
@@ -174,6 +176,14 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
           <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
             <IconButton
               size="small"
+              onClick={() => onRestock(supply.code)}
+              sx={{ color: "success.main" }}
+              title="Reabastecer"
+            >
+              <InventoryIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              size="small"
               onClick={() => onEdit(supply.code)}
               sx={{ color: "primary.main" }}
             >
@@ -190,7 +200,7 @@ export const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }: Supp
         </TableCell>
       </TableRow>
     ));
-  }, [supplies, loading, error, onEdit, onDelete]);
+  }, [supplies, loading, error, onEdit, onDelete, onRestock]);
 
   return (
     <TableContainer
