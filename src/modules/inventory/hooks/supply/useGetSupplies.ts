@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { 
   getSupplies, 
-  searchSupplies, 
-  getSuppliesByAccount,
-  getLowStockSupplies 
+  searchSupplies,
 } from "../../service/supply/getSupplies";
 import type { Supply } from "../../model/Supply";
 
