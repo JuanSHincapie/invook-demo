@@ -15,7 +15,7 @@ export const updateSupply = async (
   updateData: UpdateSupplyRequest
 ): Promise<Supply> => {
   const response = await apiService.patch<Supply>(
-    `inventory/supply/${id}`,
+    `inventory/supply/${id}/`,
     updateData
   );
   
