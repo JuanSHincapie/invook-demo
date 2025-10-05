@@ -6,6 +6,7 @@ import Navbar from '../navbar/components/Navbar';
 import HomePage from '../../modules/home/components/HomePage';
 import MainInventory from '../../modules/inventory/components/MainInventory';
 import MainHardware from '../../modules/inventory/components/hardware/MainHardware';
+import MainSupply from '../../modules/inventory/components/supply/MainSupply';
 
 
 const TemporaryPage = ({ title }: { title: string }) => (
@@ -85,7 +86,7 @@ export default function AppRoutes() {
             <ProtectedRoutes isAuthenticated={isAuthenticated}>
               <Navbar />
               <main style={{ flex: 1, padding: '1rem' }}>
-                <TemporaryPage title="Consumibles" />
+                <MainSupply  />
               </main>
             </ProtectedRoutes>
           }
