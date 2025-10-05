@@ -6,6 +6,10 @@ export const STATE_OPTIONS = [
   'PERDIDO',
 ] as const;
 
+export const AVAILABILITY_OPTIONS = [
+  'DISPONIBLE',
+  'NO_DISPONIBLE',
+] as const;
 
 export interface Hardware {
    serial: string;
@@ -13,7 +17,7 @@ export interface Hardware {
    description: string;
    comment: string;
    hardware_type: string;
-   state:string;
+   state: string;
    available: string;
-   hardware_type_name: string;
+   hardware_type_name?: string;
 }

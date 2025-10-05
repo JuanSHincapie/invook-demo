@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { getHardware, getHardwareByType } from '../../service/hardware/getHardware';
+import { useState, useEffect, useCallback } from 'react';
+import { getHardware, getHardwareByType, searchHardwareByType } from '../../service/hardware/getHardware';
 import type { Hardware } from '../../model/Hardware';
 
 interface UseGetHardwareReturn {
@@ -8,6 +8,7 @@ interface UseGetHardwareReturn {
   error: string | null;
   refetch: () => Promise<void>;
   filterByType: (type: string) => Promise<void>;
+  searchByType: (searchTerm: string) => Promise<void>;
   clearFilters: () => Promise<void>;
 }
 
@@ -16,7 +17,7 @@ export const useGetHardware = (): UseGetHardwareReturn => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadAllHardware = async () => {
+  const loadAllHardware = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -28,8 +29,9 @@ export const useGetHardware = (): UseGetHardwareReturn => {
     } finally {
       setLoading(false);
     }
-  };
-  const filterByType = async (type: string) => {
+  }, []);
+
+  const filterByType = useCallback(async (type: string) => {
     try {
       setLoading(true);
       setError(null);
@@ -41,13 +43,28 @@ export const useGetHardware = (): UseGetHardwareReturn => {
     } finally {
       setLoading(false);
     }
-  };
-  const clearFilters = async () => {
+  }, []);
+
+  const searchByType = useCallback(async (searchTerm: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await searchHardwareByType(searchTerm);
+      setHardware(data);
+    } catch (err) {
+      console.error('Error al buscar hardware por tipo:', err);
+      setError(err instanceof Error ? err.message : 'Error al buscar hardware');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const clearFilters = useCallback(async () => {
     await loadAllHardware();
-  };
+  }, [loadAllHardware]);
   useEffect(() => {
     loadAllHardware();
-  }, []);
+  }, [loadAllHardware]);
 
   return {
     hardware,
@@ -55,6 +72,7 @@ export const useGetHardware = (): UseGetHardwareReturn => {
     error,
     refetch: loadAllHardware,
     filterByType,
+    searchByType,
     clearFilters,
   };
 };
