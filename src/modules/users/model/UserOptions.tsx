@@ -21,7 +21,7 @@ export const getUserOptions = (): UserOption[] => [
         sx={{ fontSize: 60, color: theme.palette.primary.main }}
       />
     ),
-    route: '/users/monitor',
+    route: '/users/monitors',
     category: 'monitors',
   },
   {
