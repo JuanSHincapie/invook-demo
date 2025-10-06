@@ -1,14 +1,13 @@
 import {
   Box,
   Container,
-  Typography,
-  Button,
 } from "@mui/material";
-import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
 import { useGetLenders } from "../../hook/useGetLenders";
+import LenderHeader from "./LenderHeader";
 import LenderTable from "./LenderTable";
+import LenderPagination from "./LenderPagination";
 
 const MainLender = () => {
   const navigate = useNavigate();
@@ -20,9 +19,25 @@ const MainLender = () => {
     currentPage,
     hasNext,
     hasPrevious,
+    searchTerm,
+    searchLenders,
+    clearFilters,
+    goToPage,
     nextPage,
     previousPage,
+    loadAllPages
   } = useGetLenders();
+
+  const handleSearch = useCallback(
+    (searchTerm: string) => {
+      searchLenders(searchTerm);
+    },
+    [searchLenders]
+  );
+
+  const handleClearFilters = useCallback(() => {
+    clearFilters();
+  }, [clearFilters]);
 
   const handleBackToUsers = useCallback(() => {
     navigate("/users");
@@ -41,64 +56,18 @@ const MainLender = () => {
             mb: 2,
           }}
         >
-          <Box sx={{ 
-            display: "flex", 
-            justifyContent: "space-between", 
-            alignItems: "center",
-            mb: 2 
-          }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Button
-                variant="outlined"
-                startIcon={<ArrowBackIcon />}
-                onClick={handleBackToUsers}
-                sx={{ borderRadius: 2 }}
-              >
-                Volver a Usuarios
-              </Button>
-              <Typography variant="h4" sx={{ color: "#000", fontWeight: "bold" }}>
-                Gestión de Prestamistas
-              </Typography>
-            </Box>
-          </Box>
-          <Box sx={{ 
-            display: "flex", 
-            justifyContent: "space-between", 
-            alignItems: "center",
-            p: 2,
-            bgcolor: "grey.50",
-            borderRadius: 2,
-            border: "1px solid",
-            borderColor: "grey.300"
-          }}>
-            <Box>
-              <Typography variant="body2" sx={{ color: "#000", fontWeight: "medium" }}>
-                Total de prestamistas: {totalCount}
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Button
-                variant="outlined"
-                size="small"
-                disabled={!hasPrevious || loading}
-                onClick={previousPage}
-              >
-                Anterior
-              </Button>
-              <Typography variant="body2" sx={{ color: "#000", minWidth: 100, textAlign: "center" }}>
-                Página {currentPage}
-              </Typography>
-              <Button
-                variant="outlined"
-                size="small"
-                disabled={!hasNext || loading}
-                onClick={nextPage}
-              >
-                Siguiente
-              </Button>
-            </Box>
-          </Box>
+          <LenderHeader
+            onBack={handleBackToUsers}
+            onSearch={handleSearch}
+            onClearSearch={handleClearFilters}
+            onLoadAll={loadAllPages}
+            totalCount={totalCount}
+            currentPage={currentPage}
+            showingCount={lenders.length}
+            searchTerm={searchTerm}
+          />
         </Box>
+        
         <Box sx={{
           overflow: "auto",
           minHeight: "400px",
@@ -110,6 +79,17 @@ const MainLender = () => {
             lenders={lenders}
             loading={loading}
             error={error}
+          />
+          <LenderPagination
+            currentPage={currentPage}
+            totalCount={totalCount}
+            showingCount={lenders.length}
+            hasNext={hasNext}
+            hasPrevious={hasPrevious}
+            loading={loading}
+            onPageChange={goToPage}
+            onNextPage={nextPage}
+            onPreviousPage={previousPage}
           />
         </Box>
       </Box>

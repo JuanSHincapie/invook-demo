@@ -8,13 +8,6 @@ export interface Lender {
   active: boolean;
 }
 
-export interface LendersPaginatedData {
-  results: Lender[];
-  count: number;
-  next: string | null;
-  previous: string | null;
-}
-
 export interface PaginatedResponse<T> {
   results: T[];
   count: number;
