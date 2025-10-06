@@ -9,6 +9,7 @@ import MainHardware from '../../modules/inventory/components/hardware/MainHardwa
 import MainSupply from '../../modules/inventory/components/supply/MainSupply';
 import MainUsers from '../../modules/users/components/MainUsers';
 import MainMonitor from '../../modules/users/components/monitors/MainMonitor';
+import MainLender from '../../modules/users/components/lenders/MainLender';
 
 
 const TemporaryPage = ({ title }: { title: string }) => (
@@ -160,13 +161,11 @@ export default function AppRoutes() {
             <ProtectedRoutes isAuthenticated={isAuthenticated}>
               <Navbar />
               <main style={{ flex: 1, padding: '1rem' }}>
-                <TemporaryPage title="Prestamistas" />
+                <MainLender />
               </main>
             </ProtectedRoutes>
           }
         />
-        
-        {/* Cualquier otra ruta no encontrada redirige a home */}
         <Route 
           path="*" 
           element={

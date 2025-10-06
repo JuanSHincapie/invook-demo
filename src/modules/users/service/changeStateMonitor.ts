@@ -10,7 +10,7 @@ export const changeMonitorState = async (id: number, newState: 'ACTIVO' | 'INACT
     state: newState
   };
   
-  const response = await apiService.post<Monitor>(`users/admins/state/${id}`, data);
+  const response = await apiService.post<Monitor>(`users/admins/${id}/state/`, data);
   return response;
 };
 
