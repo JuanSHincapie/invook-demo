@@ -1,13 +1,16 @@
 import {
   Box,
-  Typography,
   Button,
-  CircularProgress,
+  Typography,
+  IconButton,
 } from "@mui/material";
 import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
+  FirstPage as FirstPageIcon,
+  LastPage as LastPageIcon,
 } from "@mui/icons-material";
+import { useCallback } from 'react';
 
 interface LenderPaginationProps {
   currentPage: number;
@@ -16,7 +19,7 @@ interface LenderPaginationProps {
   hasNext: boolean;
   hasPrevious: boolean;
   loading: boolean;
-  onPageChange?: (page: number) => void;
+  onPageChange: (page: number) => void;
   onNextPage: () => void;
   onPreviousPage: () => void;
 }
@@ -28,72 +31,89 @@ const LenderPagination = ({
   hasNext,
   hasPrevious,
   loading,
+  onPageChange,
   onNextPage,
   onPreviousPage,
 }: LenderPaginationProps) => {
+  const itemsPerPage = 10; 
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+  const handleFirstPage = useCallback(() => {
+    onPageChange(1);
+  }, [onPageChange]);
+
+  const handleLastPage = useCallback(() => {
+    onPageChange(totalPages);
+  }, [onPageChange, totalPages]);
+
+  if (totalPages <= 1) {
+    return null; 
+  }
+
   return (
     <Box
       sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         p: 2,
-        borderTop: "1px solid",
-        borderColor: "grey.300",
-        bgcolor: "grey.50",
-        borderRadius: "0 0 8px 8px",
+        bgcolor: 'grey.50',
+        borderRadius: '0 0 8px 8px',
+        borderTop: '1px solid',
+        borderColor: 'grey.300',
       }}
     >
-      {/* Info de paginación */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <Typography variant="body2" color="text.secondary">
-          Mostrando {showingCount} de {totalCount} prestamistas
-        </Typography>
-        {loading && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <CircularProgress size={16} />
-            <Typography variant="body2" color="text.secondary">
-              Cargando...
-            </Typography>
-          </Box>
-        )}
-      </Box>
+      <Typography variant="body2" color="text.secondary">
+        Mostrando {showingCount} de {totalCount} prestamistas
+      </Typography>
 
-      {/* Controles de navegación */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <Button
-          variant="outlined"
-          size="small"
-          disabled={!hasPrevious || loading}
-          onClick={onPreviousPage}
-          startIcon={<ChevronLeftIcon />}
-          sx={{ borderRadius: 2 }}
-        >
-          Anterior
-        </Button>
-        
-        <Typography 
-          variant="body2" 
-          sx={{ 
-            color: "#000", 
-            minWidth: 100, 
-            textAlign: "center",
-            fontWeight: "medium"
-          }}
-        >
-          Página {currentPage}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
+          Página {currentPage} de {totalPages}
         </Typography>
-        
+
+        <IconButton
+          onClick={handleFirstPage}
+          disabled={!hasPrevious || loading}
+          size="small"
+          sx={{ mr: 0.5 }}
+        >
+          <FirstPageIcon />
+        </IconButton>
+
+        <IconButton
+          onClick={onPreviousPage}
+          disabled={!hasPrevious || loading}
+          size="small"
+        >
+          <ChevronLeftIcon />
+        </IconButton>
+
         <Button
           variant="outlined"
           size="small"
-          disabled={!hasNext || loading}
-          onClick={onNextPage}
-          endIcon={<ChevronRightIcon />}
-          sx={{ borderRadius: 2 }}
+          disabled
+          sx={{ mx: 1, minWidth: 40 }}
         >
-          Siguiente
+          {currentPage}
         </Button>
+
+        <IconButton
+          onClick={onNextPage}
+          disabled={!hasNext || loading}
+          size="small"
+        >
+          <ChevronRightIcon />
+        </IconButton>
+
+        <IconButton
+          onClick={handleLastPage}
+          disabled={!hasNext || loading}
+          size="small"
+          sx={{ ml: 0.5 }}
+        >
+          <LastPageIcon />
+        </IconButton>
       </Box>
     </Box>
   );

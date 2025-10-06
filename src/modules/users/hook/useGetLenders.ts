@@ -11,7 +11,7 @@ interface UseGetLendersReturn {
   hasNext: boolean;
   hasPrevious: boolean;
   searchTerm: string;
-  refetch: () => void;
+  refetch: () => Promise<void>;
   goToPage: (page: number) => void;
   nextPage: () => void;
   previousPage: () => void;
@@ -58,9 +58,37 @@ export const useGetLenders = (): UseGetLendersReturn => {
     setHasPrevious(page > 1);
   }, []);
 
-  const refetch = useCallback(() => {
-    applyPagination(allLenders, currentPage, searchTerm);
-  }, [applyPagination, allLenders, currentPage, searchTerm]);
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getLenders();
+      setAllLenders(data);
+      applyPagination(data, 1, "");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Error al cargar prestamistas";
+      setError(errorMessage);
+      console.error("Error fetching lenders:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [applyPagination]);
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getLenders();
+      setAllLenders(data);
+      applyPagination(data, currentPage, searchTerm);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Error al cargar prestamistas";
+      setError(errorMessage);
+      console.error("Error fetching lenders:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [applyPagination, currentPage, searchTerm]);
 
   const goToPage = useCallback((page: number) => {
     applyPagination(allLenders, page, searchTerm);
@@ -89,45 +117,13 @@ export const useGetLenders = (): UseGetLendersReturn => {
   }, [applyPagination, allLenders]);
 
   const loadAllPages = useCallback(() => {
-    const search = searchTerm;
-    let filteredData = allLenders;
-    if (search.trim()) {
-      const searchLower = search.toLowerCase();
-      filteredData = allLenders.filter(lender =>
-        lender.names.toLowerCase().includes(searchLower) ||
-        lender.surnames.toLowerCase().includes(searchLower) ||
-        lender.email.toLowerCase().includes(searchLower) ||
-        lender.id.toLowerCase().includes(searchLower) ||
-        lender.phone?.toLowerCase().includes(searchLower)
-      );
-    }
-    
-    setLenders(filteredData);
-    setTotalCount(filteredData.length);
-    setCurrentPage(1);
-    setHasNext(false);
-    setHasPrevious(false);
-  }, [allLenders, searchTerm]);
+    setSearchTerm("");
+    applyPagination(allLenders, 1, "");
+  }, [applyPagination, allLenders]);
 
   useEffect(() => {
-    const loadInitialData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await getLenders();
-        setAllLenders(data);
-        applyPagination(data, 1, "");
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Error al cargar prestamistas";
-        setError(errorMessage);
-        console.error("Error fetching lenders:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadInitialData();
-  }, [applyPagination]);
+    loadData();
+  }, [loadData]);
 
   return {
     lenders,

@@ -3,11 +3,15 @@ import {
   Container,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useGetLenders } from "../../hook/useGetLenders";
 import LenderHeader from "./LenderHeader";
 import LenderTable from "./LenderTable";
 import LenderPagination from "./LenderPagination";
+import LenderFormDialog from "./LenderFormDialog";
+import LenderEditDialog from "./LenderEditDialog";
+import LenderDeleteDialog from "./LenderDeleteDialog";
+import type { Lender } from "../../model/Lender";
 
 const MainLender = () => {
   const navigate = useNavigate();
@@ -25,8 +29,59 @@ const MainLender = () => {
     goToPage,
     nextPage,
     previousPage,
-    loadAllPages
+    refetch
   } = useGetLenders();
+
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [selectedLender, setSelectedLender] = useState<Lender | null>(null);
+
+  const handleEdit = useCallback((id: string) => {
+    const lenderToEdit = lenders.find((lender) => lender.id === id);
+    if (lenderToEdit) {
+      setSelectedLender(lenderToEdit);
+      setIsEditOpen(true);
+    } 
+  }, [lenders]);
+
+  const handleDelete = useCallback((id: string) => {
+    const lenderToDelete = lenders.find((lender) => lender.id === id);
+    if (lenderToDelete) {
+      setSelectedLender(lenderToDelete);
+      setIsDeleteOpen(true);
+    }
+  }, [lenders]);
+
+  const handleCloseDeleteDialog = useCallback(() => {
+    setIsDeleteOpen(false);
+    setSelectedLender(null);
+  }, []);
+
+  const handleDeleteSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleAddNew = useCallback(() => {
+    setIsFormOpen(true);
+  }, []);
+
+  const handleFormClose = useCallback(() => {
+    setIsFormOpen(false);
+  }, []);
+
+  const handleEditClose = useCallback(() => {
+    setIsEditOpen(false);
+    setSelectedLender(null);
+  }, []);
+
+  const handleFormSuccess = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
+  const handleEditSuccess = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   const handleSearch = useCallback(
     (searchTerm: string) => {
@@ -58,9 +113,9 @@ const MainLender = () => {
         >
           <LenderHeader
             onBack={handleBackToUsers}
+            onAddNew={handleAddNew}
             onSearch={handleSearch}
             onClearSearch={handleClearFilters}
-            onLoadAll={loadAllPages}
             totalCount={totalCount}
             currentPage={currentPage}
             showingCount={lenders.length}
@@ -79,6 +134,8 @@ const MainLender = () => {
             lenders={lenders}
             loading={loading}
             error={error}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
           <LenderPagination
             currentPage={currentPage}
@@ -92,7 +149,27 @@ const MainLender = () => {
             onPreviousPage={previousPage}
           />
         </Box>
+        
+        <LenderFormDialog
+          open={isFormOpen}
+          onClose={handleFormClose}
+          onSuccess={handleFormSuccess}
+        />
+        
+        <LenderEditDialog
+          open={isEditOpen}
+          lender={selectedLender}
+          onClose={handleEditClose}
+          onSuccess={handleEditSuccess}
+        />
       </Box>
+      {/* Delete Dialog */}
+      <LenderDeleteDialog
+        open={isDeleteOpen}
+        onClose={handleCloseDeleteDialog}
+        lender={selectedLender}
+        onSuccess={handleDeleteSuccess}
+      />
     </Container>
   );
 };

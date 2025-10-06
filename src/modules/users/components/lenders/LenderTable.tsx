@@ -10,7 +10,13 @@ import {
   Typography,
   CircularProgress,
   Alert,
+  IconButton,
+  Box,
 } from "@mui/material";
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
 import { useMemo } from "react";
 import type { Lender } from "../../model/Lender";
 
@@ -18,6 +24,8 @@ interface LenderTableProps {
   lenders: Lender[];
   loading: boolean;
   error: string | null;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 const getActiveColor = (active: boolean): "success" | "error" => {
@@ -28,10 +36,10 @@ const formatActiveStatus = (active: boolean): string => {
   return active ? "Activo" : "Inactivo";
 };
 
-export const LenderTable = ({ lenders, loading, error }: LenderTableProps) => {
+export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: LenderTableProps) => {
   const tableContent = useMemo(() => {
     const safeLenders = Array.isArray(lenders) ? lenders : [];
-    const totalColumns = 6;
+    const totalColumns = 7; // ID, RFID, Nombres, Apellidos, Email, Teléfono, Estado, Acciones
     
     if (loading) {
       return (
@@ -150,9 +158,40 @@ export const LenderTable = ({ lenders, loading, error }: LenderTableProps) => {
             }}
           />
         </TableCell>
+        
+        <TableCell sx={{ width: "12%", textAlign: "center" }}>
+          <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(lender.id);
+              }}
+              sx={{
+                color: "primary.main",
+                "&:hover": { backgroundColor: "primary.light", color: "white" },
+              }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(lender.id);
+              }}
+              sx={{
+                color: "error.main",
+                "&:hover": { backgroundColor: "error.light", color: "white" },
+              }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Box>
+        </TableCell>
       </TableRow>
     ));
-  }, [lenders, loading, error]);
+  }, [lenders, loading, error, onEdit, onDelete]);
 
   return (
     <TableContainer
@@ -257,6 +296,19 @@ export const LenderTable = ({ lenders, loading, error }: LenderTableProps) => {
               }}
             >
               Estado
+            </TableCell>
+            <TableCell
+              sx={{
+                fontWeight: "bold",
+                fontSize: "0.875rem",
+                color: "#000",
+                backgroundColor: "grey.100",
+                borderBottom: "2px solid #e0e0e0",
+                width: "12%",
+                textAlign: "center",
+              }}
+            >
+              Acciones
             </TableCell>
           </TableRow>
         </TableHead>

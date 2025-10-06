@@ -2,22 +2,26 @@ import {
   Box,
   Typography,
   Button,
+  Toolbar,
   TextField,
   InputAdornment,
-  Chip,
+  IconButton,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
   Search as SearchIcon,
   Clear as ClearIcon,
-  GetApp as GetAppIcon,
+  People as PeopleIcon,
+  Add as AddIcon,
 } from "@mui/icons-material";
+import { useState, useCallback, useEffect } from 'react';
+import { useDebounce } from '../../../inventory/hooks/common/useDebounce';
 
 interface LenderHeaderProps {
   onBack: () => void;
+  onAddNew: () => void;
   onSearch?: (searchTerm: string) => void;
   onClearSearch?: () => void;
-  onLoadAll?: () => void;
   totalCount: number;
   currentPage: number;
   showingCount: number;
@@ -26,125 +30,119 @@ interface LenderHeaderProps {
 
 const LenderHeader = ({
   onBack,
+  onAddNew,
   onSearch,
   onClearSearch,
-  onLoadAll,
   totalCount,
   currentPage,
   showingCount,
-  searchTerm = "",
+  searchTerm: initialSearchTerm = "",
 }: LenderHeaderProps) => {
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    if (onSearch) {
-      onSearch(value);
-    }
-  };
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const { debounce } = useDebounce();
 
-  const handleClearSearch = () => {
-    if (onClearSearch) {
-      onClearSearch();
-    }
-  };
+  useEffect(() => {
+    setSearchTerm(initialSearchTerm);
+  }, [initialSearchTerm]);
+
+  const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+    debounce(() => {
+      if (value.trim()) {
+        onSearch?.(value);
+      } else {
+        onClearSearch?.();
+      }
+    }, 500);
+  }, [onSearch, onClearSearch, debounce]);
+
+  const handleClearSearch = useCallback(() => {
+    setSearchTerm('');
+    onClearSearch?.();
+  }, [onClearSearch]);
 
   return (
     <>
-      <Box sx={{ 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "center",
-        mb: 2 
-      }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button
             variant="outlined"
             startIcon={<ArrowBackIcon />}
             onClick={onBack}
             sx={{ borderRadius: 2 }}
           >
-            Volver a Usuarios
+            Volver
           </Button>
-          <Typography variant="h4" sx={{ color: "#000", fontWeight: "bold" }}>
-            Gestión de Prestamistas
-          </Typography>
-        </Box>
-      </Box>
-      <Box sx={{ 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "center",
-        p: 2,
-        bgcolor: "grey.50",
-        borderRadius: 2,
-        border: "1px solid",
-        borderColor: "grey.300",
-        gap: 2
-      }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
-          <Box>
-            <Typography variant="body2" sx={{ color: "#000", fontWeight: "medium" }}>
-              Total de prestamistas: {totalCount}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <PeopleIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+            <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#000' }}>
+              Gestión de Prestamistas
             </Typography>
           </Box>
-          
-          {/* Búsqueda */}
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={onAddNew}
+          sx={{ borderRadius: 2 }}
+        >
+          Nuevo Prestamista
+        </Button>
+      </Box>
+      
+      <Toolbar sx={{ 
+        bgcolor: 'grey.50', 
+        borderRadius: '8px 8px 0 0', 
+        mb: 0, 
+        display: 'flex', 
+        justifyContent: 'space-between',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      }}>
+        <Typography variant="h6" component="div" sx={{ fontWeight: 'medium', color: '#000' }}>
+          Lista de Prestamistas ({showingCount} de {totalCount} - Página {currentPage})
+        </Typography>
+        
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {onSearch && (
             <TextField
               size="small"
               placeholder="Buscar prestamistas..."
               value={searchTerm}
               onChange={handleSearchChange}
-              sx={{ minWidth: 250 }}
+              sx={{ 
+                minWidth: 300,
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: 'white',
+                  '& input': {
+                    color: '#000',
+                  }
+                }
+              }}
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon fontSize="small" />
+                      <SearchIcon sx={{ color: 'primary.main' }} />
                     </InputAdornment>
                   ),
                   endAdornment: searchTerm && (
                     <InputAdornment position="end">
-                      <Button
+                      <IconButton
                         size="small"
                         onClick={handleClearSearch}
-                        sx={{ minWidth: "auto", p: 0.5 }}
+                        sx={{ color: 'grey.500' }}
                       >
                         <ClearIcon fontSize="small" />
-                      </Button>
+                      </IconButton>
                     </InputAdornment>
                   ),
                 }
               }}
             />
           )}
-          
-          {/* Chip de filtro activo */}
-          {searchTerm && (
-            <Chip
-              label={`Buscando: "${searchTerm}"`}
-              onDelete={handleClearSearch}
-              color="primary"
-              variant="outlined"
-              size="small"
-            />
-          )}
         </Box>
-        
-        {/* Acciones */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {onLoadAll && (
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<GetAppIcon />}
-              onClick={onLoadAll}
-              sx={{ borderRadius: 2 }}
-            >
-              Cargar Todos
-            </Button>
-          )}
-        </Box>
-      </Box>
+      </Toolbar>
     </>
   );
 };
