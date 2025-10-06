@@ -25,7 +25,7 @@ interface UseMonitorMutationsReturn {
   createMonitor: (data: CreateMonitorRequest) => Promise<Monitor | null>;
   updateMonitor: (id: number, data: UpdateMonitorRequest) => Promise<Monitor | null>;
   deleteMonitor: (id: number) => Promise<boolean>;
-  changeMonitorState: (id: number) => Promise<Monitor | null>;
+  changeMonitorState: (id: number, newState: 'ACTIVO' | 'INACTIVO') => Promise<Monitor | null>;
   deactivateMonitor: (id: number) => Promise<Monitor | null>;
   activateMonitor: (id: number) => Promise<Monitor | null>;
   suspendMonitor: (id: number) => Promise<Monitor | null>;
@@ -87,11 +87,11 @@ export const useMonitorMutations = (): UseMonitorMutationsReturn => {
     }
   }, []);
 
-  const handleChangeMonitorState = useCallback(async (id: number): Promise<Monitor | null> => {
+  const handleChangeMonitorState = useCallback(async (id: number, newState: 'ACTIVO' | 'INACTIVO'): Promise<Monitor | null> => {
     try {
       setChangingState(true);
       setError(null);
-      const updatedMonitor = await changeMonitorState(id);
+      const updatedMonitor = await changeMonitorState(id, newState);
       return updatedMonitor;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error al cambiar estado del monitor";

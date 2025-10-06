@@ -1,22 +1,29 @@
 import apiService from "../../../shared/modules/instances/AxiosInstance";
 import type { Monitor } from "../model/Monitor";
 
-export const changeMonitorState = async (id: number): Promise<Monitor> => {
-  // POST con body vacío, solo ID en la URL - el backend controla el cambio de estado
-  const response = await apiService.post<Monitor>(`users/admins/state/${id}`, {});
+export interface ChangeStateMonitorRequest {
+  state: 'ACTIVO' | 'INACTIVO';
+}
+
+export const changeMonitorState = async (id: number, newState: 'ACTIVO' | 'INACTIVO'): Promise<Monitor> => {
+  const data: ChangeStateMonitorRequest = {
+    state: newState
+  };
+  
+  const response = await apiService.post<Monitor>(`users/admins/state/${id}`, data);
   return response;
 };
 
 export const deactivateMonitor = async (id: number): Promise<Monitor> => {
-  return changeMonitorState(id);
+  return changeMonitorState(id, 'INACTIVO');
 };
 
 export const activateMonitor = async (id: number): Promise<Monitor> => {
-  return changeMonitorState(id);
+  return changeMonitorState(id, 'ACTIVO');
 };
 
 export const suspendMonitor = async (id: number): Promise<Monitor> => {
-  return changeMonitorState(id);
+  return changeMonitorState(id, 'INACTIVO');
 };
 
 export default {

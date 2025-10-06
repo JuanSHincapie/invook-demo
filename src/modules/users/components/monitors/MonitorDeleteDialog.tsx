@@ -9,13 +9,17 @@ import {
   Alert,
   CircularProgress,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   Close as CloseIcon,
   Warning as WarningIcon,
   ChangeCircle as ChangeIcon,
 } from '@mui/icons-material';
-import { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useMonitorMutations } from '../../hook/useMonitorMutations';
 import type { Monitor } from '../../model/Monitor';
 
@@ -26,10 +30,17 @@ interface MonitorDeleteDialogProps {
   onSuccess?: (monitor: Monitor) => void;
 }
 
+const STATE_OPTIONS = [
+  { value: 'INACTIVO', label: 'Inactivo', color: 'error' },
+  { value: 'ACTIVO', label: 'Activo', color: 'success' },
+] as const;
+
 export const MonitorDeleteDialog = ({ open, monitor, onClose, onSuccess }: MonitorDeleteDialogProps) => {
   const { changeMonitorState, changingState, error, clearError } = useMonitorMutations();
+  const [selectedState, setSelectedState] = useState<'ACTIVO' | 'INACTIVO'>('INACTIVO');
 
   const resetForm = useCallback(() => {
+    setSelectedState('INACTIVO');
     clearError();
   }, [clearError]);
 
@@ -38,14 +49,14 @@ export const MonitorDeleteDialog = ({ open, monitor, onClose, onSuccess }: Monit
     
     if (!monitor) return;
 
-    const result = await changeMonitorState(monitor.id);
+    const result = await changeMonitorState(monitor.id, selectedState);
     
     if (result && onSuccess) {
       onSuccess(result);
       resetForm();
       onClose();
     }
-  }, [monitor, changeMonitorState, onSuccess, resetForm, onClose]);
+  }, [monitor, selectedState, changeMonitorState, onSuccess, resetForm, onClose]);
 
   const handleClose = useCallback(() => {
     resetForm();
@@ -55,12 +66,14 @@ export const MonitorDeleteDialog = ({ open, monitor, onClose, onSuccess }: Monit
   useEffect(() => {
     if (open) {
       clearError();
+      setSelectedState('INACTIVO');
     }
   }, [open, clearError]);
 
   if (!monitor) return null;
 
   const isCurrentlyActive = monitor.state === 'ACTIVO';
+  const actionText = selectedState === 'INACTIVO' ? 'Desactivar' : 'Activar';
 
   return (
     <Dialog 
@@ -132,19 +145,51 @@ export const MonitorDeleteDialog = ({ open, monitor, onClose, onSuccess }: Monit
               </Alert>
             )}
 
+            {/* Selector de nuevo estado */}
+            <FormControl fullWidth required>
+              <InputLabel sx={{ color: '#000' }}>Nuevo Estado</InputLabel>
+              <Select
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                label="Nuevo Estado"
+                sx={{
+                  '& .MuiSelect-select': { color: '#000' }
+                }}
+              >
+                {STATE_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          bgcolor: `${option.color}.main`,
+                        }}
+                      />
+                      {option.label}
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             {/* Descripción de la acción */}
             <Box sx={{ 
               p: 2, 
-              bgcolor: 'warning.50', 
+              bgcolor: selectedState === 'INACTIVO' ? 'error.50' : 'success.50', 
               borderRadius: 1,
               border: '1px solid',
-              borderColor: 'warning.200'
+              borderColor: selectedState === 'INACTIVO' ? 'error.200' : 'success.200'
             }}>
-              <Typography variant="body2" sx={{ color: 'warning.dark' }}>
-                <strong>¿Qué sucederá con este cambio?</strong>
+              <Typography variant="body2" sx={{ color: selectedState === 'INACTIVO' ? 'error.dark' : 'success.dark' }}>
+                <strong>¿Qué significa {selectedState === 'INACTIVO' ? 'desactivar' : 'activar'}?</strong>
               </Typography>
-              <Typography variant="body2" sx={{ color: 'warning.dark', mt: 0.5 }}>
-                El sistema determinará automáticamente el nuevo estado del monitor según su estado actual.
+              <Typography variant="body2" sx={{ color: selectedState === 'INACTIVO' ? 'error.dark' : 'success.dark', mt: 0.5 }}>
+                {selectedState === 'INACTIVO' 
+                  ? 'El monitor no podrá acceder al sistema hasta que sea reactivado.'
+                  : 'El monitor tendrá acceso completo al sistema y podrá realizar todas sus funciones.'
+                }
               </Typography>
             </Box>
           </Box>
@@ -163,11 +208,11 @@ export const MonitorDeleteDialog = ({ open, monitor, onClose, onSuccess }: Monit
             type="submit"
             variant="contained"
             disabled={changingState}
-            color="warning"
+            color={selectedState === 'INACTIVO' ? 'error' : 'success'}
             startIcon={changingState ? <CircularProgress size={16} /> : <ChangeIcon />}
             sx={{ borderRadius: 2 }}
           >
-            {changingState ? 'Cambiando...' : 'Cambiar Estado'}
+            {changingState ? 'Cambiando...' : `${actionText} Monitor`}
           </Button>
         </DialogActions>
       </form>
