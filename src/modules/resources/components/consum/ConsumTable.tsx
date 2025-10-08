@@ -6,40 +6,29 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip,
   Typography,
   CircularProgress,
   Alert,
   IconButton,
-  Box,
+  Box
 } from "@mui/material";
 import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import { useMemo } from "react";
-import type { Lender } from "../../model/Lender";
+import type { Consum } from "../../model/Consum";
 
-interface LenderTableProps {
-  lenders: Lender[];
+interface ConsumTableProps {
+  consums: Consum[];
   loading: boolean;
   error: string | null;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onViewDetails: (consum: Consum) => void;
 }
 
-const getActiveColor = (active: boolean): "success" | "error" => {
-  return active ? "success" : "error";
-};
-
-const formatActiveStatus = (active: boolean): string => {
-  return active ? "Activo" : "Inactivo";
-};
-
-export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: LenderTableProps) => {
+export const ConsumTable = ({ consums, loading, error, onViewDetails }: ConsumTableProps) => {
   const tableContent = useMemo(() => {
-    const safeLenders = Array.isArray(lenders) ? lenders : [];
-    const totalColumns = 7;
+    const safeConsums = Array.isArray(consums) ? consums : [];
+    const totalColumns = 5;
     
     if (loading) {
       return (
@@ -47,7 +36,7 @@ export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: Lende
           <TableCell colSpan={totalColumns} sx={{ textAlign: "center", py: 4 }}>
             <CircularProgress size={24} />
             <Typography variant="body2" sx={{ mt: 1, color: "#000" }}>
-              Cargando lenders...
+              Cargando consumos...
             </Typography>
           </TableCell>
         </TableRow>
@@ -66,21 +55,21 @@ export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: Lende
       );
     }
 
-    if (safeLenders.length === 0) {
+    if (safeConsums.length === 0) {
       return (
         <TableRow>
           <TableCell colSpan={totalColumns} sx={{ textAlign: "center", py: 4 }}>
             <Typography variant="body2" sx={{ color: "#000" }}>
-              No hay lenders registrados
+              No hay consumos registrados
             </Typography>
           </TableCell>
         </TableRow>
       );
     }
 
-    return safeLenders.map((lender) => (
+    return safeConsums.map((consum) => (
       <TableRow
-        key={lender.id}
+        key={consum.id}
         sx={{
           "&:nth-of-type(odd)": { bgcolor: "action.hover" },
           "&:hover": { bgcolor: "action.selected" },
@@ -91,107 +80,63 @@ export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: Lende
           fontFamily: "monospace", 
           fontSize: "0.875rem", 
           color: "#000",
-          width: "15%",
+          width: "25%",
           fontWeight: "medium",
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap"
         }}>
-          {lender.id}
+          {consum.id}
         </TableCell>
         
         <TableCell sx={{ 
           fontWeight: "medium", 
           color: "#000",
-          width: "18%",
+          width: "30%",
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap"
         }}>
-          {lender.names || "-"}
+          {consum.id_lender}
         </TableCell>
 
         <TableCell sx={{ 
           fontWeight: "medium", 
           color: "#000",
-          width: "18%",
+          width: "25%",
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap"
         }}>
-          {lender.surnames || "-"}
-        </TableCell>
-
-        <TableCell sx={{ 
-          color: "#000", 
-          fontSize: "0.875rem", 
-          width: "20%",
-          fontFamily: "monospace",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
-        }}>
-          {lender.email || "-"}
-        </TableCell>
-
-        <TableCell sx={{ 
-          color: "#000", 
-          fontSize: "0.875rem", 
-          width: "15%",
-          fontFamily: "monospace",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
-        }}>
-          {lender.phone || "-"}
-        </TableCell>
-
-        <TableCell sx={{ width: "14%" }}>
-          <Chip
-            label={formatActiveStatus(lender.active)}
-            size="small"
-            color={getActiveColor(lender.active)}
-            sx={{ 
-              borderRadius: 1, 
-              fontWeight: "medium",
-              minWidth: 80
-            }}
-          />
-        </TableCell>
-        
-        <TableCell sx={{ width: "12%", textAlign: "center" }}>
+          {consum.id_monitor}
+        </TableCell>        
+        <TableCell sx={{ width: "8%", textAlign: "center" }}>
           <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
             <IconButton
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                onEdit(lender.id);
+                onViewDetails(consum);
               }}
+              disabled={!consum.supplies_detail || consum.supplies_detail.length === 0}
               sx={{
-                color: "primary.main",
-                "&:hover": { backgroundColor: "primary.light", color: "white" },
+                color: consum.supplies_detail && consum.supplies_detail.length > 0 ? "primary.main" : "disabled",
+                "&:hover": { 
+                  backgroundColor: "primary.light", 
+                  color: "white" 
+                },
+                "&:disabled": {
+                  color: "text.disabled"
+                }
               }}
             >
-              <EditIcon fontSize="small" />
-            </IconButton>
-            <IconButton
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(lender.id);
-              }}
-              sx={{
-                color: "error.main",
-                "&:hover": { backgroundColor: "error.light", color: "white" },
-              }}
-            >
-              <DeleteIcon fontSize="small" />
+              <VisibilityIcon fontSize="small" />
             </IconButton>
           </Box>
         </TableCell>
       </TableRow>
     ));
-  }, [lenders, loading, error, onEdit, onDelete]);
+  }, [consums, loading, error, onViewDetails]);
 
   return (
     <TableContainer
@@ -199,8 +144,10 @@ export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: Lende
       sx={{
         borderRadius: '0 0 8px 8px',
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        height: "100%",
+        maxHeight: "60vh",
+        minHeight: "400px", 
         width: "100%",
+        overflow: "auto", 
         "& .MuiTable-root": {
           "& .MuiTableHead-root": {
             position: "sticky",
@@ -232,7 +179,7 @@ export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: Lende
                 color: "#000",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
-                width: "15%",
+                width: "25%",
               }}
             >
               ID
@@ -244,10 +191,10 @@ export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: Lende
                 color: "#000",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
-                width: "18%",
+                width: "30%",
               }}
             >
-              Nombres
+              Prestamista
             </TableCell>
             <TableCell
               sx={{
@@ -256,10 +203,10 @@ export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: Lende
                 color: "#000",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
-                width: "18%",
+                width: "25%",
               }}
             >
-              Apellidos
+              Monitor
             </TableCell>
             <TableCell
               sx={{
@@ -268,43 +215,7 @@ export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: Lende
                 color: "#000",
                 backgroundColor: "grey.100",
                 borderBottom: "2px solid #e0e0e0",
-                width: "20%",
-              }}
-            >
-              Email
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: "bold",
-                fontSize: "0.875rem",
-                color: "#000",
-                backgroundColor: "grey.100",
-                borderBottom: "2px solid #e0e0e0",
-                width: "15%",
-              }}
-            >
-              Teléfono
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: "bold",
-                fontSize: "0.875rem",
-                color: "#000",
-                backgroundColor: "grey.100",
-                borderBottom: "2px solid #e0e0e0",
-                width: "14%",
-              }}
-            >
-              Estado
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: "bold",
-                fontSize: "0.875rem",
-                color: "#000",
-                backgroundColor: "grey.100",
-                borderBottom: "2px solid #e0e0e0",
-                width: "12%",
+                width: "8%",
                 textAlign: "center",
               }}
             >
@@ -318,4 +229,4 @@ export const LenderTable = ({ lenders, loading, error, onEdit, onDelete }: Lende
   );
 };
 
-export default LenderTable;
+export default ConsumTable;

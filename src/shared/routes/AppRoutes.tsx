@@ -7,6 +7,7 @@ import HomePage from '../../modules/home/components/HomePage';
 import MainInventory from '../../modules/inventory/components/MainInventory';
 import MainHardware from '../../modules/inventory/components/hardware/MainHardware';
 import MainSupply from '../../modules/inventory/components/supply/MainSupply';
+import { MainResource, MainConsum } from '../../modules/resources/components';
 import MainUsers from '../../modules/users/components/MainUsers';
 import MainMonitor from '../../modules/users/components/monitors/MainMonitor';
 import MainLender from '../../modules/users/components/lenders/MainLender';
@@ -101,7 +102,7 @@ export default function AppRoutes() {
             <ProtectedRoutes isAuthenticated={isAuthenticated}>
               <Navbar />
               <main style={{ flex: 1, padding: '1rem' }}>
-                <TemporaryPage title="Resources" />
+                <MainResource />
               </main>
             </ProtectedRoutes>
           }
@@ -120,12 +121,12 @@ export default function AppRoutes() {
         />
         
         <Route
-          path="/resources/consumos"
+          path="/resources/consumibles"
           element={
             <ProtectedRoutes isAuthenticated={isAuthenticated}>
               <Navbar />
               <main style={{ flex: 1, padding: '1rem' }}>
-                <TemporaryPage title="Consumos" />
+                <MainConsum />
               </main>
             </ProtectedRoutes>
           }
