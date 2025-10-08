@@ -13,7 +13,12 @@ import {
   Alert,
   Tooltip,
 } from "@mui/material";
-import { Visibility } from "@mui/icons-material";
+import { 
+  Visibility, 
+  Add, 
+  Reply, 
+  Done
+} from "@mui/icons-material";
 import type { Loan } from "../../model/Loan";
 
 interface LoanTableProps {
@@ -21,9 +26,20 @@ interface LoanTableProps {
   loading: boolean;
   error: string | null;
   onViewDetails: (loan: Loan) => void;
+  onAddHardware?: (loan: Loan) => void;
+  onReturnHardware?: (loan: Loan) => void;
+  onCloseLoan?: (loan: Loan) => void;
 }
 
-const LoanTable = ({ loans, loading, error, onViewDetails }: LoanTableProps) => {
+const LoanTable = ({ 
+  loans, 
+  loading, 
+  error, 
+  onViewDetails, 
+  onAddHardware, 
+  onReturnHardware, 
+  onCloseLoan 
+}: LoanTableProps) => {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("es-ES", {
@@ -176,7 +192,12 @@ const LoanTable = ({ loans, loading, error, onViewDetails }: LoanTableProps) => 
             </TableCell>
             <TableCell
               align="center"
-              sx={{ fontWeight: 600, bgcolor: "grey.50" }}
+              sx={{ 
+                fontWeight: 600, 
+                bgcolor: "grey.50",
+                minWidth: 150,
+                width: 150
+              }}
             >
               Acciones
             </TableCell>
@@ -221,15 +242,53 @@ const LoanTable = ({ loans, loading, error, onViewDetails }: LoanTableProps) => 
               </TableCell>
 
               <TableCell align="center">
-                <Tooltip title="Ver detalles">
-                  <IconButton
-                    onClick={() => onViewDetails(loan)}
-                    size="small"
-                    color="primary"
-                  >
-                    <Visibility />
-                  </IconButton>
-                </Tooltip>
+                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                  <Tooltip title="Ver detalles">
+                    <IconButton
+                      onClick={() => onViewDetails(loan)}
+                      size="small"
+                      color="primary"
+                    >
+                      <Visibility />
+                    </IconButton>
+                  </Tooltip>
+                  
+                  {loan.status === "ABIERTO" && onAddHardware && (
+                    <Tooltip title="Agregar hardware">
+                      <IconButton
+                        onClick={() => onAddHardware(loan)}
+                        size="small"
+                        color="success"
+                      >
+                        <Add />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  
+                  {loan.status === "ABIERTO" && onReturnHardware && (
+                    <Tooltip title="Devolver hardware">
+                      <IconButton
+                        onClick={() => onReturnHardware(loan)}
+                        size="small"
+                        color="warning"
+                      >
+                        <Reply />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  
+                  {loan.status === "ABIERTO" && onCloseLoan && (
+                    <Tooltip title="Cerrar préstamo">
+                      <IconButton
+                        onClick={() => onCloseLoan(loan)}
+                        size="small"
+                        color="error"
+                      >
+                        <Done />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Box>
               </TableCell>
             </TableRow>
           ))}

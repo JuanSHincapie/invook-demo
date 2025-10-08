@@ -16,16 +16,26 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { Close, Add, Assignment, Lock } from "@mui/icons-material";
 import type { Loan } from "../../model/Loan";
 
 interface LoanDetailDialogProps {
   open: boolean;
   onClose: () => void;
   loan: Loan | null;
+  onAddHardware?: (loan: Loan) => void;
+  onReturnHardware?: (loan: Loan) => void;
+  onCloseLoan?: (loan: Loan) => void;
 }
 
-const LoanDetailDialog = ({ open, onClose, loan }: LoanDetailDialogProps) => {
+const LoanDetailDialog = ({ 
+  open, 
+  onClose, 
+  loan,
+  onAddHardware,
+  onReturnHardware,
+  onCloseLoan 
+}: LoanDetailDialogProps) => {
   if (!loan) return null;
 
   const formatDate = (dateString: string | null) => {
@@ -355,7 +365,48 @@ const LoanDetailDialog = ({ open, onClose, loan }: LoanDetailDialogProps) => {
         </Box>
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions sx={{ flexDirection: 'column', gap: 2, p: 2 }}>
+        {/* Botones de acción solo si el préstamo está abierto */}
+        {loan.status === 'ABIERTO' && (
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+            {onAddHardware && (
+              <Button
+                onClick={() => onAddHardware(loan)}
+                variant="outlined"
+                startIcon={<Add />}
+                size="small"
+              >
+                Agregar Hardware
+              </Button>
+            )}
+            
+            {onReturnHardware && loan.hardwares.some(item => !item.returned_at) && (
+              <Button
+                onClick={() => onReturnHardware(loan)}
+                variant="outlined"
+                startIcon={<Assignment />}
+                size="small"
+                color="info"
+              >
+                Devolver Hardware
+              </Button>
+            )}
+            
+            {onCloseLoan && (
+              <Button
+                onClick={() => onCloseLoan(loan)}
+                variant="outlined"
+                startIcon={<Lock />}
+                size="small"
+                color="warning"
+              >
+                Cerrar Préstamo
+              </Button>
+            )}
+          </Box>
+        )}
+        
+        {/* Botón cerrar diálogo */}
         <Button onClick={onClose} variant="contained">
           Cerrar
         </Button>

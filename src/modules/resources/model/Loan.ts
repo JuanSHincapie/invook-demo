@@ -57,14 +57,63 @@ export interface Loan {
 }
 
 export type LoanStatus = 'ABIERTO' | 'CERRADO';
+export type HardwareState = 'BUENO' | 'MALO' | 'FUNCIONAL' | 'DAÑADO' | 'EN_REPARACION';
 
 export interface CreateLoanRequest {
+  action: "create";
   id_lender: string;
-  id_monitor: number;
-  hardwares: string[]; 
+  id_monitor: string;
+  serials_hardware: string[];
 }
 
 export interface CreateLoanResponse {
   message: string;
   loan: Loan;
 }
+
+export interface AddHardwareRequest {
+  action: "add_hardware";
+  serials_hardware: string[];
+}
+
+export interface AddHardwareResponse {
+  message: string;
+  loan: Loan;
+}
+
+export interface HardwareReturn {
+  serial: string;
+  state: HardwareState;
+}
+
+export interface ReturnHardwareRequest {
+  action: "return_hardware";
+  monitor_id: string;
+  serials_hardware: HardwareReturn[];
+}
+
+export interface ReturnHardwareResponse {
+  message: string;
+  loan: Loan;
+}
+
+export interface CloseLoanRequest {
+  action: "close_loan";
+}
+
+export interface CloseLoanResponse {
+  message: string;
+  loan: Loan;
+}
+
+export type LoanActionRequest = 
+  | CreateLoanRequest 
+  | AddHardwareRequest 
+  | ReturnHardwareRequest 
+  | CloseLoanRequest;
+
+export type LoanActionResponse = 
+  | CreateLoanResponse 
+  | AddHardwareResponse 
+  | ReturnHardwareResponse 
+  | CloseLoanResponse;
